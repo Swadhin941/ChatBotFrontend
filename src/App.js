@@ -11,21 +11,7 @@ import Home from './Components/Home/Home/Home';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 
 function App() {
-  // const socket = io.connect('http://localhost:5000',{
-
-  // });
-  // const [allMessages, setAllMessages]= useState([]);
-  // useEffect(() => {
-  //   socket.on("receiveMessage", (data)=>{
-  //     let temp = [...allMessages, data];
-  //     setAllMessages(temp);
-  //   })
-  // }, [socket])
-
-  // const handleSubmit= (e)=>{
-  //   e.preventDefault();
-  //   socket.emit("testMessage", { message: e.target.text.value });
-  // }
+ 
 
   const router = createBrowserRouter([
     {
