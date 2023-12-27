@@ -10,7 +10,7 @@ import { serverUrl } from '../CustomHook/Server/Server';
 
 const Login = () => {
     useTitle('Login- Chatbot');
-    const { login, googleLogin, user, loading, setUser } = useContext(SharedData);
+    const { login, googleLogin, user, loading, setUser, updateProfilePhoto, setLoading } = useContext(SharedData);
     const [showPassword, setShowPassword] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -27,6 +27,22 @@ const Login = () => {
     const handleGoogle = () => {
         googleLogin()
             .then((users) => {
+                fetch(`${serverUrl}/user`,{
+                    method:"POST",
+                    headers:{
+                        'content-type': "application/json",
+                    },
+                    body: JSON.stringify({ fullName: users?.user?.displayName, email: users?.user?.email, emailStatus: true, profilePicture:"https://i.ibb.co/bmVqbdY/empty-person.jpg", activeStatus: false})
+                })
+                .then(res=>res.json())
+                .then(data=>{
+                    if(data.acknowledged){
+                        updateProfilePhoto('https://i.ibb.co/bmVqbdY/empty-person.jpg')
+                        .then(()=>{
+                            setLoading(false)
+                        })
+                    }
+                })
                 toast.success(`Welcome ${users?.user?.displayName}`);
             })
     }

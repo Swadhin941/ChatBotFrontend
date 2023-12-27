@@ -5,7 +5,7 @@ import axios from "axios";
 import { serverUrl } from '../Server/Server';
 
 const useAxiosSecure = () => {
-    const { logout } = useContext(SharedData);
+    const { logout, setLoading, loading } = useContext(SharedData);
     const navigate = useNavigate();
     const axiosSecure = axios.create({
         baseURL: serverUrl
@@ -24,6 +24,7 @@ const useAxiosSecure = () => {
                 if (error.response) {
                     if (error.response.status === 401) {
                         logout()
+                        setLoading(false);
                         navigate('/login');
                     }
                     if (error.response.status === 403) {

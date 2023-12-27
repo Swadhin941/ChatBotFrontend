@@ -5,6 +5,7 @@ import { serverUrl } from '../CustomHook/Server/Server';
 
 export const SharedData = createContext();
 
+
 const SharedContext = ({ children }) => {
     const auth = getAuth(app);
     const [loading, setLoading] = useState(true);
@@ -40,14 +41,14 @@ const SharedContext = ({ children }) => {
         });
     }
 
-    const updateProfilePhoto = (photo) => {
+    const updateProfilePhoto =(photo) => {
         setLoading(true);
         return updateProfile(auth.currentUser, {
             photoURL: photo
         })
     }
 
-    const googleLogin = () => {
+    const googleLogin = async () => {
         setLoading(true);
         return signInWithPopup(auth, googleProvider);
     }
@@ -55,19 +56,16 @@ const SharedContext = ({ children }) => {
     //Email Verification customizations
 
     useEffect(() => {
-        if (user?.emailVerified) {
-            setLoading(true);
+        if (user) {
             fetch(`${serverUrl}/emailStatus?user=${user?.email}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.emailStatus) {
                         setUser(user);
-                        setLoading(false);
                     }
                     else {
                         logout()
                         setUser(null);
-                        setLoading(false);
                     }
                 })
         }
