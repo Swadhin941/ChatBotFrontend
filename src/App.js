@@ -36,7 +36,7 @@ function App() {
   ])
 
   return (
-    <div >
+    <div className='ps-0 pe-0'>
       <RouterProvider router={router}>
 
       </RouterProvider>

@@ -9,20 +9,60 @@ import BeatLoader from "react-spinners/BeatLoader";
 import useAxiosSecure from '../../CustomHook/useAxiosSecure/useAxiosSecure';
 import { useNavigate } from 'react-router-dom';
 import useTitle from '../../CustomHook/useTitle/useTitle';
+import PropagateLoader from "react-spinners/PropagateLoader";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const Home = () => {
     useTitle("Chatbot");
     const socket = io.connect(`${serverUrl}`);
-    socket.auth= {token: `Bearer ${localStorage.getItem('token')}`};
+    socket.auth = { token: `Bearer ${localStorage.getItem('token')}` };
     socket.connect();
     const { logout, user, setLoading, setUser } = useContext(SharedData);
     const [allMessages, setAllMessages] = useState([]);
+    const [text, setText] = useState('');
     const [thinkingState, setThinkingState] = useState(false);
     const [listeningState, setListeningState] = useState(false);
     const [axiosSecure] = useAxiosSecure();
     const navigate = useNavigate();
+    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+    const handleListening = () => {
+        if (listeningState) {
+            setListeningState(false);
+            return;
+        }
+        if (!listeningState) {
+            if(!browserSupportsSpeechRecognition){
+                toast.error("Your browser does not support speech recognition");
+                return;
+            }
+            else{
+                setListeningState(true);
+                // setText('');
+                // SpeechRecognition.startListening({continuous:true});
+            }
+        }
+    }
+
+    useEffect(()=>{
+        if(listeningState){
+            setText('');
+            SpeechRecognition.startListening({continuous: true});
+        }
+        else{
+            SpeechRecognition.stopListening();
+            resetTranscript();
+        }
+    },[listeningState])
+
+    useEffect(()=>{
+        if(transcript!==''){
+            setText(transcript);
+        }
+    },[transcript])
+
     useEffect(() => {
-        if(user){
+        if (user) {
             axiosSecure.get(`${serverUrl}/allMessages?user=${user?.email}`)
                 .then(res => res.data)
                 .then(data => {
@@ -34,10 +74,10 @@ const Home = () => {
                     }
                 })
         }
-        
+
     }, [user])
 
-    useEffect(()=>{
+    useEffect(() => {
         socket.on('connect_error', (error) => {
             console.log(error);
             if (error.message === "forbidden") {
@@ -49,15 +89,9 @@ const Home = () => {
                 setLoading(false)
                 navigate('/login')
             }
-            
-        })
-    },[socket])
 
-    useEffect(() => {
-        if (listeningState) {
-            toast.error("Speech Recognition is not connected yet");
-        }
-    }, [listeningState])
+        })
+    }, [socket])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,13 +103,14 @@ const Home = () => {
         const currentSec = Date.now();
         socket.emit('personMessage', { message, sender: email, receiver: "chatbot@gmail.com", time, date, currentSec, token: `Bearer ${localStorage.getItem('token')}` }, (response) => {
             console.log(response);
-            if(response.status==='Unauthenticated'){
+            if (response.status === 'Unauthenticated') {
                 logout()
                 setLoading(false);
                 navigate('/login')
             }
             if (response.status === 'success') {
                 form.reset();
+                setText('');
                 setThinkingState(true);
                 setAllMessages(response.data)
                 fetch(`https://api.openai.com/v1/chat/completions`, {
@@ -88,7 +123,6 @@ const Home = () => {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        console.log(data);
                         if (data.id) {
                             const assistantReply = data.choices[0].message.content
                             const assistantTime = new Date().toLocaleTimeString();
@@ -97,7 +131,7 @@ const Home = () => {
                             const assistant = "chatbot@gmail.com";
                             const assistantSec = Date.now()
                             socket.emit('assistantMessage', { sender: assistant, receiver: assistantReceiver, message: assistantReply, time: assistantTime, date: assistantDate, currentSec: assistantSec, token: `Bearer ${localStorage.getItem('token')}` }, (res) => {
-                                if(res.status==='Unauthenticated'){
+                                if (res.status === 'Unauthenticated') {
                                     logout()
                                     setLoading(false)
                                     navigate('/login');
@@ -124,15 +158,15 @@ const Home = () => {
 
 
     return (
-        <div className='container-fluid d-flex justify-content-center' style={{ height: "100vh" }}>
-            <div className="card p-0 messageContainer">
+        <div className='container-fluid messageContainer' style={{ height: "100vh" }}>
+            <div className="card p-0 messageCard">
                 <div className="card-header p-2" style={{ backgroundColor: "#54ff9b" }}>
                     <div className='d-flex justify-content-between'>
                         <div className='d-flex'>
                             <div>
                                 <img src={user?.photoURL} alt="" height={50} width={50} style={{ borderRadius: "50%" }} />
                             </div>
-                            <div className='ms-2' style={{}}>
+                            <div className='ms-2' >
                                 <h5>{user?.displayName}</h5>
                             </div>
                         </div>
@@ -173,14 +207,22 @@ const Home = () => {
                         </div>
                     </div>
                 }
+                {
+                    listeningState && <div style={{ position: "absolute", bottom: "4.4rem", left: "50%" }}>
+                        <div>
+                            <PropagateLoader color="teal" />
+                        </div>
+
+                    </div>
+                }
 
                 <div className="card-footer p-0" style={{ borderTop: "0px" }}>
                     <div className='p-0'>
                         <form className='form' onSubmit={handleSubmit}>
                             <div className='input-group'>
-                                <textarea name="messageField" className='form-control' id="messageField" rows="1" style={{ resize: "none", borderRight: "0px" }} placeholder='Type your message here'></textarea>
-                                <span className='input-group-text' style={{ backgroundColor: "white", borderRight: "0px", cursor: "pointer" }} onClick={() => setListeningState(true)} onMouseLeave={() => setListeningState(false)}>
-                                    <i className='bi bi-mic'></i>
+                                <textarea name="messageField" className='form-control' id="messageField" rows="1" style={{ resize: "none", borderRight: "0px" }} placeholder='Type your message here' onChange={(e) => setText(e.target.value)} value={text}></textarea>
+                                <span className='input-group-text' style={{ backgroundColor: "white", borderRight: "0px", cursor: "pointer" }} onClick={handleListening}>
+                                    <i className={listeningState ? "bi bi-x-octagon-fill text-danger" : 'bi bi-mic'}></i>
                                 </span>
                                 <span className='input-group-text'><button type='submit' className='btn btn-success'>Send</button></span>
                             </div>

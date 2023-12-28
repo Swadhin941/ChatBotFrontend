@@ -1,5 +1,56 @@
+@media screen and (max-width: 576px) {
+    .messageContainer {
+        padding: 0px;
+        height: 100%;
+    }
+
+    .messageCard {
+        height: 100%;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 767px) {
+    .messageContainer {
+        padding: 0px;
+        height: 100%;
+    }
+
+    .messageCard {
+        height: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .messageContainer {
+        padding: 0px;
+        height: 100%;
+    }
+
+    .messageCard {
+        height: 100%;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .messageContainer {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .messageCard {
+        width: 560px;
+    }
+}
+
 @media screen and (min-width: 1201px) {
-    .messageContainer{
+    .messageContainer {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    .messageCard {
         width: 560px;
     }
 }

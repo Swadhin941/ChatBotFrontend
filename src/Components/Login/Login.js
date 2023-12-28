@@ -19,29 +19,33 @@ const Login = () => {
 
     useEffect(() => {
         if (user) {
-            navigate(from, { replace: true });
+            navigate("/", { replace: true });
         }
     }, [user])
 
     const handleGoogle = () => {
         googleLogin()
             .then((users) => {
-                fetch(`${serverUrl}/user`,{
-                    method:"POST",
-                    headers:{
+                // setLoading(false)
+                // setUser(users.user);
+
+                fetch(`${serverUrl}/user`, {
+                    method: "POST",
+                    headers: {
                         'content-type': "application/json",
                     },
-                    body: JSON.stringify({ fullName: users?.user?.displayName, email: users?.user?.email, emailStatus: true, profilePicture:"https://i.ibb.co/bmVqbdY/empty-person.jpg", activeStatus: false})
+                    body: JSON.stringify({ fullName: users?.user?.displayName, email: users?.user?.email, emailStatus: true, profilePicture: "https://i.ibb.co/bmVqbdY/empty-person.jpg", activeStatus: false })
                 })
-                .then(res=>res.json())
-                .then(data=>{
-                    if(data.acknowledged){
-                        updateProfilePhoto('https://i.ibb.co/bmVqbdY/empty-person.jpg')
-                        .then(()=>{
-                            setLoading(false)
-                        })
-                    }
-                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.acknowledged) {
+                            updateProfilePhoto('https://i.ibb.co/bmVqbdY/empty-person.jpg')
+                                .then(() => {
+                                    navigate(from, { replace: true });
+                                    setLoading(false);
+                                })
+                        }
+                    })
                 toast.success(`Welcome ${users?.user?.displayName}`);
             })
     }
@@ -66,18 +70,18 @@ const Login = () => {
                             ErrorNotify(error.message);
                         })
                 }
-                else{
+                else {
                     login(email, password)
-                    .then(users=>{
-                        window.location.reload();
-                        toast.success(`Welcome ${users?.user?.displayName}`);
-                        setLoginLoading(false);
-                    })
-                    .catch(error=>{
-                        setLoading(false);
-                        setLoginLoading(false);
-                        ErrorNotify(error.message);
-                    })
+                        .then(users => {
+                            window.location.reload();
+                            toast.success(`Welcome ${users?.user?.displayName}`);
+                            setLoginLoading(false);
+                        })
+                        .catch(error => {
+                            setLoading(false);
+                            setLoginLoading(false);
+                            ErrorNotify(error.message);
+                        })
                 }
             })
 

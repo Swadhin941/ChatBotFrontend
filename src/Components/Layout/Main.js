@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const Main = () => {
     return (
-        <div className='container-fluid' style={{height:"100vh"}}>
+        <div className='container-fluid ps-0 pe-0' style={{height:"100vh"}}>
             <Outlet></Outlet>
         </div>
     );
