@@ -2,8 +2,9 @@
 
 1. Authentication system using firebase.
 2. User can change their profile picture.
-3. Real-time data transfer
+3. Real-time message send
 4. Integrated to OpenAI
+5. Speech recognition system
 
 
 # Getting Started with Create React App
