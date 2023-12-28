@@ -1,3 +1,11 @@
+##Features of this project
+
+1. Authentication system using firebase.
+2. User can change their profile picture.
+3. Real-time data transfer
+4. Integrated to OpenAI
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
