@@ -101,6 +101,9 @@ const Home = () => {
         const time = new Date().toLocaleTimeString();
         const date = new Date().toLocaleDateString();
         const currentSec = Date.now();
+        setAllMessages([...allMessages, { message, sender: email, receiver: "chatbot@gmail.com", time, date, currentSec }])
+        form.reset();
+        setText('');
         socket.emit('personMessage', { message, sender: email, receiver: "chatbot@gmail.com", time, date, currentSec, token: `Bearer ${localStorage.getItem('token')}` }, (response) => {
             console.log(response);
             if (response.status === 'Unauthenticated') {
@@ -109,7 +112,6 @@ const Home = () => {
                 navigate('/login')
             }
             if (response.status === 'success') {
-                form.reset();
                 setText('');
                 setThinkingState(true);
                 setAllMessages(response.data)
