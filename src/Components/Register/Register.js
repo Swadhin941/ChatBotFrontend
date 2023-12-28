@@ -11,14 +11,14 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { createAccount, user, updateName, verifyEmail, updateProfilePhoto, setLoading } = useContext(SharedData);
     const navigate = useNavigate();
-    const [token] = useToken(user?.email);
+    // const [token] = useToken(user?.email);
     const [registerLoading, setRegisterLoading] = useState(false);
 
     useEffect(() => {
-        if (token) {
+        if (user) {
             navigate('/', { replace: true });
         }
-    }, [token])
+    }, [user])
 
     const handleSubmit = (e) => {
         e.preventDefault();

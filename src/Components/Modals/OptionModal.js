@@ -28,7 +28,7 @@ const OptionModal = () => {
                 if(data.success){
                     updateProfilePhoto(data.data.url)
                     .then(()=>{
-                        // setLoading(false);
+                        setLoading(false);
                         fetch(`${serverUrl}/user?user=${user?.email}`,{
                             method: "PUT",
                             headers:{

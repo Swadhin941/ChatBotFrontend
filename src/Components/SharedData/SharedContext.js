@@ -41,7 +41,7 @@ const SharedContext = ({ children }) => {
         });
     }
 
-    const updateProfilePhoto =(photo) => {
+    const updateProfilePhoto = (photo) => {
         setLoading(true);
         return updateProfile(auth.currentUser, {
             photoURL: photo
@@ -60,27 +60,41 @@ const SharedContext = ({ children }) => {
             fetch(`${serverUrl}/emailStatus?user=${user?.email}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.emailStatus) {
+                    if (!data.emailStatus) {
                         setUser(user);
                     }
-                    else {
-                        logout()
-                        setUser(null);
-                    }
+                    // setLoading(false);
                 })
         }
     }, [user])
 
     useEffect(() => {
         const check = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser === null || currentUser?.emailVerified) {
-                console.log(currentUser);
-                setUser(currentUser);
+            if (currentUser && currentUser?.emailVerified) {
+                fetch(`${serverUrl}/jwt`, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify({ email: currentUser?.email })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.token) {
+                            localStorage.setItem('token', data.token);
+                            setUser(currentUser);
+                        }
+                    })
+
+            }
+            else {
+                localStorage.removeItem('token');
+                setUser(null);
             }
             setLoading(false);
         })
         return () => check();
-    },[])
+    }, [])
 
     const authInfo = { createAccount, login, user, setUser, logout, setLoading, verifyEmail, updateName, updateProfilePhoto, googleLogin, loading };
     return (

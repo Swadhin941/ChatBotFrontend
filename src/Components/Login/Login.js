@@ -15,14 +15,13 @@ const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const from = location.state?.from?.pathname || '/';
-    const [token] = useToken(user?.email);
     const [loginLoading, setLoginLoading] = useState(false);
 
     useEffect(() => {
-        if (token) {
+        if (user) {
             navigate(from, { replace: true });
         }
-    }, [token])
+    }, [user])
 
     const handleGoogle = () => {
         googleLogin()
@@ -70,11 +69,12 @@ const Login = () => {
                 else{
                     login(email, password)
                     .then(users=>{
-                        setUser(users.user)
+                        window.location.reload();
                         toast.success(`Welcome ${users?.user?.displayName}`);
                         setLoginLoading(false);
                     })
                     .catch(error=>{
+                        setLoading(false);
                         setLoginLoading(false);
                         ErrorNotify(error.message);
                     })

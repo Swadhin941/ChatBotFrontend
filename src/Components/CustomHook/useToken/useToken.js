@@ -3,6 +3,7 @@ import { serverUrl } from '../Server/Server';
 
 const useToken = (email) => {
     const [token, setToken] = useState(false);
+    console.log('usetoken', email);
     useEffect(() => {
         if (email) {
             fetch(`${serverUrl}/jwt`, {
@@ -15,8 +16,8 @@ const useToken = (email) => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.token) {
-                        localStorage.setItem('token', data.token);
-                        setToken(true);
+                        // localStorage.setItem('token', data.token);
+                        // setToken(true);
                     }
                 })
         }

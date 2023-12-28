@@ -15,7 +15,7 @@ const Home = () => {
     const socket = io.connect(`${serverUrl}`);
     socket.auth= {token: `Bearer ${localStorage.getItem('token')}`};
     socket.connect();
-    const { logout, user, setLoading } = useContext(SharedData);
+    const { logout, user, setLoading, setUser } = useContext(SharedData);
     const [allMessages, setAllMessages] = useState([]);
     const [thinkingState, setThinkingState] = useState(false);
     const [listeningState, setListeningState] = useState(false);
@@ -31,9 +31,6 @@ const Home = () => {
                 .catch(error => {
                     if (error.message.split('code')[1] === 401) {
                         toast.error("Unauthorize access");
-                        // logout()
-                        // navigate('/login');
-                        // setLoading(false);
                     }
                 })
         }
@@ -47,10 +44,12 @@ const Home = () => {
                 navigate("/forbidden");
             }
             if (error.message === 'empty_auth' || error.message === 'tokenError') {
-                logout();
-                setLoading(false);
+                logout()
+                setUser(null);
+                setLoading(false)
                 navigate('/login')
             }
+            
         })
     },[socket])
 
