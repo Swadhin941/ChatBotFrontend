@@ -37,7 +37,14 @@ const Home = () => {
                 return;
             }
             else{
-                setListeningState(true);
+                navigator.mediaDevices.getUserMedia({audio: true})
+                .then((stream)=>{
+                    setListeningState(true);
+                })
+                .catch(error=>{
+                    toast.error("You did not give permission to access the microphone")
+                })
+                
                 // setText('');
                 // SpeechRecognition.startListening({continuous:true});
             }
